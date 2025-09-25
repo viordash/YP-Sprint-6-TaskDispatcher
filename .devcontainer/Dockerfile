@@ -1,7 +1,9 @@
 FROM ubuntu@sha256:79efa276fdefa2ee3911db29b0608f8c0561c347ec3f4d4139980d43b168d991
 
 # Update the package database and install required tools
+RUN apt clean
 RUN apt update
+RUN apt --fix-broken install
 RUN apt install -y python3 python3-pip pipx git less vim sudo cmake make g++-15 gcc-15 clang-format clangd-19 nodejs npm  libgtest-dev
 
 # Update  gcc/g++ version to the latest ones
