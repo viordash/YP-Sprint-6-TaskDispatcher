@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/build/dispatcher",
             "args": [],
             "cwd": "${workspaceFolder}/build",
-            "preLaunchTask": "GCC: Build Debug app",
+            "preLaunchTask": "build",
             "initCommands": [
                 "settings set target.disable-aslr false"
             ]

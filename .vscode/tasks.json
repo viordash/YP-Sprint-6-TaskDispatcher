@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": [
+                "mkdir -p ${workspaceFolder}/build ; ",
+                "cd ${workspaceFolder}/build &&",
+                "cmake .. -DCMAKE_BUILD_TYPE=Debug && ",
+                "make -j $(nproc)"
+            ],
+            "presentation": {
+                "clear": true
+            },
+            "hide": false,
+            "group": {
+                "kind": "build"
+            }
+        }
+    ]
+}
