@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 class TestablePriorityQueue : PriorityQueue {
 public:
     TestablePriorityQueue(std::map<TaskPriority, QueueOptions> options) : PriorityQueue(options) {}
-    std::map<TaskPriority, std::unique_ptr<IQueue>> &PublicMorozov_queues() { return queues; }
+    const std::map<TaskPriority, std::unique_ptr<IQueue>> &PublicMorozov_queues() { return queues; }
 };
 
 TEST(PriorityQueueTest, Constructor_creates_queues) {
