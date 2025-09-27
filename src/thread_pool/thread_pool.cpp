@@ -22,8 +22,10 @@ void ThreadPool::worker() {
         }
         try {
             task.value()();
-        } catch (std::exception &ex) {
+        } catch (const std::exception &ex) {
             Logger::Get().Log(std::format("Task error: {}", ex.what()));
+        } catch (...) {
+            Logger::Get().Log("Task unknown error");
         }
     }
 }

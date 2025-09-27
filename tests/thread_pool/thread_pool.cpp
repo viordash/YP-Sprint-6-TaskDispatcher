@@ -98,8 +98,16 @@ TEST(ThreadPoolTest, Executes_tasks_with_exceptions_gracefully) {
         completed_tasks++;
         throw std::invalid_argument("Task 3 failed");
     });
+    pq->push(TaskPriority::Normal, [&]() {
+        completed_tasks++;
+        successful_tasks++;
+    });
+    pq->push(TaskPriority::Normal, [&]() {
+        completed_tasks++;
+        throw "Task 5 failed";
+    });
 
-    for (int i = 0; i < num_tasks - 3; ++i) {
+    for (int i = 0; i < num_tasks - 5; ++i) {
         pq->push(TaskPriority::Normal, [&]() {
             completed_tasks++;
             successful_tasks++;
@@ -111,7 +119,7 @@ TEST(ThreadPoolTest, Executes_tasks_with_exceptions_gracefully) {
     }
 
     ASSERT_EQ(completed_tasks.load(), num_tasks);
-    const int tasks_with_exception = 2;
+    const int tasks_with_exception = 3;
     ASSERT_EQ(successful_tasks.load(), num_tasks - tasks_with_exception);
 }
 
