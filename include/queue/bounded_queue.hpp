@@ -1,6 +1,5 @@
 #pragma once
 #include "queue/queue.hpp"
-
 #include <condition_variable>
 #include <functional>
 #include <mutex>

@@ -21,6 +21,12 @@ TEST(BoundedQueueTest, Push_and_TryPop_single_thread) {
     ASSERT_FALSE(empty_task.has_value());
 }
 
+TEST(BoundedQueueTest, TryPop_on_empty_queue) {
+    BoundedQueue bounded_queue(2);
+    auto task = bounded_queue.try_pop();
+    ASSERT_FALSE(task.has_value());
+}
+
 TEST(BoundedQueueTest, Queue_has_exceeded_capacity) {
     BoundedQueue bounded_queue(2);
     int counter = 0;
@@ -65,13 +71,13 @@ TEST(BoundedQueueTest, Push_and_TryPop_multi_thread) {
     BoundedQueue bounded_queue(capacity);
     std::atomic<int> counter = 0;
 
-    auto push = [&]() {
+    auto push_func = [&]() {
         for (int i = 0; i < num_tasks; ++i) {
             bounded_queue.push([&]() { counter++; });
         }
     };
 
-    auto pop = [&]() {
+    auto pop_func = [&]() {
         for (size_t i = 0; i < num_tasks; i++) {
             std::optional<std::function<void()>> task;
             while (!(task = bounded_queue.try_pop()).has_value()) {
@@ -82,12 +88,12 @@ TEST(BoundedQueueTest, Push_and_TryPop_multi_thread) {
     };
 
     {
-        std::jthread push_thread1(push);
-        std::jthread pop_thread1(pop);
-        std::jthread push_thread2(push);
-        std::jthread pop_thread2(pop);
-        std::jthread push_thread3(push);
-        std::jthread pop_thread3(pop);
+        std::jthread push_thread1(push_func);
+        std::jthread pop_thread1(pop_func);
+        std::jthread push_thread2(push_func);
+        std::jthread pop_thread2(pop_func);
+        std::jthread push_thread3(push_func);
+        std::jthread pop_thread3(pop_func);
     }
 
     EXPECT_EQ(counter, num_tasks * 3);
