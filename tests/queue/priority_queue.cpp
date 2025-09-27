@@ -13,7 +13,7 @@ using namespace std::chrono_literals;
 
 class TestablePriorityQueue : PriorityQueue {
 public:
-    TestablePriorityQueue(std::map<TaskPriority, QueueOptions> options) : PriorityQueue(options) {}
+    TestablePriorityQueue(const std::map<TaskPriority, QueueOptions> &options) : PriorityQueue(options) {}
     const std::map<TaskPriority, std::unique_ptr<IQueue>> &PublicMorozov_queues() { return queues; }
 };
 
@@ -35,10 +35,23 @@ TEST(PriorityQueueTest, PushAndPop_single_thread_respects_priority) {
     PriorityQueue priority_queue(options);
 
     std::vector<std::string> results;
-    priority_queue.push(TaskPriority::Normal, [&] { results.push_back("Normal 1"); });
-    priority_queue.push(TaskPriority::High, [&] { results.push_back("High 2"); });
-    priority_queue.push(TaskPriority::Normal, [&] { results.push_back("Normal 3"); });
-    priority_queue.push(TaskPriority::High, [&] { results.push_back("High 4"); });
+    std::mutex results_mutex;
+    priority_queue.push(TaskPriority::Normal, [&] {
+        std::lock_guard<std::mutex> lock(results_mutex);
+        results.push_back("Normal 1");
+    });
+    priority_queue.push(TaskPriority::High, [&] {
+        std::lock_guard<std::mutex> lock(results_mutex);
+        results.push_back("High 2");
+    });
+    priority_queue.push(TaskPriority::Normal, [&] {
+        std::lock_guard<std::mutex> lock(results_mutex);
+        results.push_back("Normal 3");
+    });
+    priority_queue.push(TaskPriority::High, [&] {
+        std::lock_guard<std::mutex> lock(results_mutex);
+        results.push_back("High 4");
+    });
 
     auto taskHigh_2 = priority_queue.pop();
     auto taskHigh_4 = priority_queue.pop();

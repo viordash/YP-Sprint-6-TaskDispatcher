@@ -19,7 +19,7 @@ protected:
     std::atomic<bool> shutdown_flag = false;
 
 public:
-    explicit PriorityQueue(std::map<TaskPriority, QueueOptions> options);
+    explicit PriorityQueue(const std::map<TaskPriority, QueueOptions> &options);
 
     void push(TaskPriority priority, std::function<void()> task);
     // block on pop until shutdown is called

@@ -4,7 +4,7 @@
 
 namespace dispatcher::queue {
 
-PriorityQueue::PriorityQueue(std::map<TaskPriority, QueueOptions> options) {
+PriorityQueue::PriorityQueue(const std::map<TaskPriority, QueueOptions> &options) {
     for (auto const &[priority, opts] : options) {
         if (opts.bounded) {
             assert(opts.capacity.has_value() && opts.capacity.value() > 0);
