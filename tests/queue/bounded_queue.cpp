@@ -45,14 +45,14 @@ TEST(BoundedQueueTest, Queue_has_exceeded_capacity) {
 
     push_blocked.wait(false);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    EXPECT_TRUE(push_blocked);
+    ASSERT_TRUE(push_blocked);
 
     auto task1 = bounded_queue.try_pop();
     ASSERT_TRUE(task1.has_value());
     task1.value()();
 
     push_blocked.wait(true);
-    EXPECT_FALSE(push_blocked);
+    ASSERT_FALSE(push_blocked);
 
     auto task2 = bounded_queue.try_pop();
     ASSERT_TRUE(task2.has_value());
@@ -62,7 +62,7 @@ TEST(BoundedQueueTest, Queue_has_exceeded_capacity) {
     ASSERT_TRUE(task3.has_value());
     task3.value()();
 
-    EXPECT_EQ(counter, 42);
+    ASSERT_EQ(counter, 42);
 }
 
 TEST(BoundedQueueTest, Push_and_TryPop_multi_thread) {
@@ -96,7 +96,7 @@ TEST(BoundedQueueTest, Push_and_TryPop_multi_thread) {
         std::jthread pop_thread3(pop_func);
     }
 
-    EXPECT_EQ(counter, num_tasks * 3);
+    ASSERT_EQ(counter, num_tasks * 3);
 }
 
 }  // namespace dispatcher::queue

@@ -40,7 +40,7 @@ TEST(UnboundedQueueTest, Multiple_Pushes_and_Pops_single_thread) {
         ASSERT_TRUE(task.has_value());
         task.value()();
     }
-    EXPECT_EQ(counter, num_items);
+    ASSERT_EQ(counter, num_items);
 
     auto empty_task = unbounded_queue.try_pop();
     ASSERT_FALSE(empty_task.has_value());
@@ -76,7 +76,7 @@ TEST(UnboundedQueueTest, Push_and_TryPop_multi_thread) {
         std::jthread pop_thread3(pop_func);
     }
 
-    EXPECT_EQ(counter, num_tasks * 3);
+    ASSERT_EQ(counter, num_tasks * 3);
 }
 
 }  // namespace dispatcher::queue
