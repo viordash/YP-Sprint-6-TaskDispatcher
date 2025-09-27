@@ -1,5 +1,6 @@
 #include "thread_pool/thread_pool.hpp"
 #include "logger.hpp"
+#include <exception>
 
 namespace dispatcher::thread_pool {
 
@@ -19,7 +20,11 @@ void ThreadPool::worker() {
             Logger::Get().Log("Shutdown Worker");
             break;
         }
-        task.value()();
+        try {
+            task.value()();
+        } catch (std::exception &ex) {
+            Logger::Get().Log(std::format("Task error: {}", ex.what()));
+        }
     }
 }
 
