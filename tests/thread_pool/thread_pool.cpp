@@ -2,6 +2,7 @@
 #include <atomic>
 #include <gtest/gtest.h>
 #include <print>
+#include <stdexcept>
 #include <thread>
 #include <vector>
 
@@ -75,6 +76,43 @@ TEST(ThreadPoolTest, Handles_no_tasks_during_Shutdown) {
     }
 
     ASSERT_FALSE(pq->pop().has_value());
+}
+
+TEST(ThreadPoolTest, Executes_tasks_with_exceptions_gracefully) {
+    TestableThreadPool pool(2);
+
+    std::atomic<int> completed_tasks = 0;
+    std::atomic<int> successful_tasks = 0;
+    const int num_tasks = 10;
+    auto pq = pool.PublicMorozov_priority_queue();
+
+    pq->push(TaskPriority::Normal, [&]() {
+        completed_tasks++;
+        throw std::runtime_error("Task 1 failed");
+    });
+    pq->push(TaskPriority::Normal, [&]() {
+        completed_tasks++;
+        successful_tasks++;
+    });
+    pq->push(TaskPriority::Normal, [&]() {
+        completed_tasks++;
+        throw std::invalid_argument("Task 3 failed");
+    });
+
+    for (int i = 0; i < num_tasks - 3; ++i) {
+        pq->push(TaskPriority::Normal, [&]() {
+            completed_tasks++;
+            successful_tasks++;
+        });
+    }
+
+    while (completed_tasks.load() < num_tasks) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
+    ASSERT_EQ(completed_tasks.load(), num_tasks);
+    const int tasks_with_exception = 2;
+    ASSERT_EQ(successful_tasks.load(), num_tasks - tasks_with_exception);
 }
 
 }  // namespace dispatcher::thread_pool
