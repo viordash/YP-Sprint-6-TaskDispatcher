@@ -193,7 +193,7 @@ TEST(PriorityQueueTest, Bounded_and_Unbounded_queues_work_together) {
     ASSERT_TRUE(taskUnbounded_2.has_value());
     taskUnbounded_2.value()();
 
-    EXPECT_EQ(counter, 42);
+    ASSERT_EQ(counter, 42);
 }
 
 }  // namespace dispatcher::queue
