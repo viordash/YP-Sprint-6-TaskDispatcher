@@ -30,6 +30,9 @@ void ThreadPool::worker() {
     }
 }
 
-ThreadPool::~ThreadPool() { priority_queue->shutdown(); }
+ThreadPool::~ThreadPool() {
+    priority_queue->shutdown();
+    workers.clear();
+}
 
 }  // namespace dispatcher::thread_pool

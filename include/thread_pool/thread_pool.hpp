@@ -9,8 +9,8 @@ namespace dispatcher::thread_pool {
 
 class ThreadPool {
 protected:
-    std::vector<std::jthread> workers;
     std::shared_ptr<queue::PriorityQueue> priority_queue;
+    std::vector<std::jthread> workers;
 
     void worker();
 
