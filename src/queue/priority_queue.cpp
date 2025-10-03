@@ -39,7 +39,7 @@ std::optional<std::function<void()>> PriorityQueue::pop() {
             }
         }
 
-        if (shutdown_flag.load(std::memory_order_acquire)) {
+        if (shutdown_flag) {
             break;
         }
         not_empty.wait(lock);
@@ -48,7 +48,9 @@ std::optional<std::function<void()>> PriorityQueue::pop() {
 }
 
 void PriorityQueue::shutdown() {
-    shutdown_flag.store(true, std::memory_order_release);
+    std::unique_lock<std::mutex> lock(mutex);
+    shutdown_flag = true;
+    lock.unlock();
     not_empty.notify_all();
 }
 

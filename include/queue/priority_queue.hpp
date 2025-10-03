@@ -17,7 +17,7 @@ protected:
     std::map<TaskPriority, std::unique_ptr<IQueue>> queues;
     std::mutex mutex;
     std::condition_variable not_empty;
-    std::atomic<bool> shutdown_flag = false;
+    bool shutdown_flag = false;
 
 public:
     explicit PriorityQueue(const std::unordered_map<TaskPriority, QueueOptions> &options);
