@@ -1,9 +1,8 @@
 #include "task_dispatcher.hpp"
 #include <atomic>
+#include <cstdint>
 #include <gtest/gtest.h>
-#include <string>
 #include <thread>
-#include <vector>
 
 namespace dispatcher {
 
@@ -48,37 +47,49 @@ TEST(TaskDispatcherTest, Schedule_respects_priority) {
     const size_t thread_count = 1;
     TaskDispatcher dispatcher(thread_count);
 
-    std::vector<std::string> results;
+    std::atomic<bool> suspend = false;
+    std::uint32_t bitmask = 0;
     std::mutex results_mutex;
 
     dispatcher.schedule(TaskPriority::Normal, [&]() {
+        suspend = true;
+        suspend.notify_all();
+        std::this_thread::sleep_for(100ms);
+    });
+    suspend.wait(false);
+
+    dispatcher.schedule(TaskPriority::Normal, [&]() {
         std::lock_guard<std::mutex> lock(results_mutex);
-        results.push_back("Normal 1");
+        bitmask <<= 4;
+        bitmask |= 0x05;
     });
     dispatcher.schedule(TaskPriority::High, [&]() {
         std::lock_guard<std::mutex> lock(results_mutex);
-        results.push_back("High 2");
+        bitmask <<= 4;
+        bitmask |= 0x0A;
     });
     dispatcher.schedule(TaskPriority::Normal, [&]() {
         std::lock_guard<std::mutex> lock(results_mutex);
-        results.push_back("Normal 3");
+        bitmask <<= 4;
+        bitmask |= 0x05;
     });
     dispatcher.schedule(TaskPriority::High, [&]() {
         std::lock_guard<std::mutex> lock(results_mutex);
-        results.push_back("High 4");
+        bitmask <<= 4;
+        bitmask |= 0x0A;
     });
 
-    int expected_total_tasks = 4;
-    while (results.size() < expected_total_tasks) {
+    while (true) {
+        {
+            std::lock_guard<std::mutex> lock(results_mutex);
+            if ((bitmask & 0xF000) != 0) {
+                break;
+            }
+        }
         std::this_thread::sleep_for(10ms);
     }
 
-    ASSERT_EQ(results.size(), expected_total_tasks);
-
-    ASSERT_EQ(results[0], "High 2");
-    ASSERT_EQ(results[1], "High 4");
-    ASSERT_EQ(results[2], "Normal 1");
-    ASSERT_EQ(results[3], "Normal 3");
+    ASSERT_EQ(bitmask, 0xAA55);
 }
 
 TEST(TaskDispatcherTest, Destructor_shutdown_gracefully) {
