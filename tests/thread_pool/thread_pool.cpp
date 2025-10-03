@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 class TestableThreadPool : ThreadPool {
 public:
     static std::shared_ptr<PriorityQueue> create_priority_queue() {
-        std::map<TaskPriority, QueueOptions> options;
+        std::unordered_map<TaskPriority, QueueOptions> options;
         options[TaskPriority::High] = {false, std::nullopt};
         options[TaskPriority::Normal] = {false, std::nullopt};
         return std::make_shared<PriorityQueue>(options);

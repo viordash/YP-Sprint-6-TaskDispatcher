@@ -13,12 +13,12 @@ using namespace std::chrono_literals;
 
 class TestablePriorityQueue : PriorityQueue {
 public:
-    TestablePriorityQueue(const std::map<TaskPriority, QueueOptions> &options) : PriorityQueue(options) {}
+    TestablePriorityQueue(const std::unordered_map<TaskPriority, QueueOptions> &options) : PriorityQueue(options) {}
     const std::map<TaskPriority, std::unique_ptr<IQueue>> &PublicMorozov_queues() { return queues; }
 };
 
 TEST(PriorityQueueTest, Constructor_creates_queues) {
-    std::map<TaskPriority, QueueOptions> options;
+    std::unordered_map<TaskPriority, QueueOptions> options;
     options[TaskPriority::High] = {true, 10};
     options[TaskPriority::Normal] = {false, std::nullopt};
 
@@ -29,7 +29,7 @@ TEST(PriorityQueueTest, Constructor_creates_queues) {
 }
 
 TEST(PriorityQueueTest, PushAndPop_single_thread_respects_priority) {
-    std::map<TaskPriority, QueueOptions> options;
+    std::unordered_map<TaskPriority, QueueOptions> options;
     options[TaskPriority::High] = {false, std::nullopt};
     options[TaskPriority::Normal] = {false, std::nullopt};
     PriorityQueue priority_queue(options);
@@ -76,7 +76,7 @@ TEST(PriorityQueueTest, PushAndPop_single_thread_respects_priority) {
 }
 
 TEST(PriorityQueueTest, Pop_blocks_when_empty) {
-    std::map<TaskPriority, QueueOptions> options;
+    std::unordered_map<TaskPriority, QueueOptions> options;
     options[TaskPriority::Normal] = {false, std::nullopt};
     PriorityQueue priority_queue(options);
 
@@ -100,7 +100,7 @@ TEST(PriorityQueueTest, Pop_blocks_when_empty) {
 }
 
 TEST(PriorityQueueTest, Shutdown_unblocks_pop) {
-    std::map<TaskPriority, QueueOptions> options;
+    std::unordered_map<TaskPriority, QueueOptions> options;
     options[TaskPriority::Normal] = {false, std::nullopt};
     PriorityQueue priority_queue(options);
 
@@ -124,7 +124,7 @@ TEST(PriorityQueueTest, Shutdown_unblocks_pop) {
 }
 
 TEST(PriorityQueueTest, MultiThread_push_and_pop) {
-    std::map<TaskPriority, QueueOptions> options;
+    std::unordered_map<TaskPriority, QueueOptions> options;
     options[TaskPriority::High] = {false, std::nullopt};
     options[TaskPriority::Normal] = {false, std::nullopt};
     PriorityQueue priority_queue(options);
@@ -165,8 +165,8 @@ TEST(PriorityQueueTest, MultiThread_push_and_pop) {
 }
 
 TEST(PriorityQueueTest, Bounded_and_Unbounded_queues_work_together) {
-    std::map<TaskPriority, QueueOptions> options = {{TaskPriority::High, {true, 2}},
-                                                    {TaskPriority::Normal, {false, std::nullopt}}};
+    std::unordered_map<TaskPriority, QueueOptions> options = {{TaskPriority::High, {true, 2}},
+                                                              {TaskPriority::Normal, {false, std::nullopt}}};
 
     PriorityQueue priority_queue(options);
     std::atomic<int> counter = 0;

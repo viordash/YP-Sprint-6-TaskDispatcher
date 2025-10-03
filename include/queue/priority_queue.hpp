@@ -8,6 +8,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <unordered_map>
 
 namespace dispatcher::queue {
 
@@ -19,7 +20,7 @@ protected:
     std::atomic<bool> shutdown_flag = false;
 
 public:
-    explicit PriorityQueue(const std::map<TaskPriority, QueueOptions> &options);
+    explicit PriorityQueue(const std::unordered_map<TaskPriority, QueueOptions> &options);
 
     void push(TaskPriority priority, std::function<void()> task);
     // block on pop until shutdown is called

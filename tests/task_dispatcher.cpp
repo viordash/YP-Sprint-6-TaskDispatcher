@@ -15,7 +15,7 @@ TEST(TaskDispatcherTest, Constructor_with_default_options) {
 }
 
 TEST(TaskDispatcherTest, Constructor_with_custom_options) {
-    std::map<TaskPriority, queue::QueueOptions> custom_options;
+    std::unordered_map<TaskPriority, queue::QueueOptions> custom_options;
     custom_options[TaskPriority::High] = {true, 5};
     custom_options[TaskPriority::Normal] = {false, std::nullopt};
 
