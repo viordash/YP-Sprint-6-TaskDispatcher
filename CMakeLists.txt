@@ -4,6 +4,7 @@ project(priority_task_dispatcher VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Configure local githooks
 execute_process(
@@ -18,17 +19,17 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
 )
 
-# set(target dispatcher)
+set(target dispatcher)
 
-# add_executable(${target} main.cpp)
-# target_include_directories(${target} PUBLIC
-#     ${CMAKE_CURRENT_SOURCE_DIR}/include
-# )
+add_executable(${target} main.cpp)
+target_include_directories(${target} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-# target_link_libraries(${target} 
-#     PRIVATE
-#         task_dispatcher
-# )
+target_link_libraries(${target} 
+    PRIVATE
+        task_dispatcher
+)
 
 include(CTest)
 enable_testing()
